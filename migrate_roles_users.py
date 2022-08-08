@@ -18,38 +18,36 @@ def main():
     images and updates the Application files for orcasql-breadth.
     """
     options = process_arguments()
-    # if (not check_connectivity(options) or not check_connectivity(options,False)):
-    #     print("Connectivity to Source or Target Server Failed. Please check your Network Connectivity")
-    #     return
-    # if not (check_if_db_exists(options)):
-    #     print("One of the Passed in Databases does not exist on the Source Server")
-    #     return
-    # dumpfile_directory = make_dump_directory()
-    # if not (os.path.exists(dumpfile_directory)):
-    #     print("Dump Files Directory did not get created successfully")
-    #     return
-    # all_roles_dumpfile = dump_roles(options,dumpfile_directory)
-    # if not (os.path.exists(all_roles_dumpfile)):
-    #     print("Global Roles Dump did not happen successfully.")
-    #     return
-    # if not remove_unwanted_users_from_cluster_dump(options, all_roles_dumpfile):
-    #     return
-    # if not dump_grant_statments_perdb(options,dumpfile_directory):
-    #     return 
-    # num_dbs = len(options.get("dbs"))
-    # num_files = len(os.listdir(dumpfile_directory))
-    # if(num_files != num_dbs*2 + 1):
-    #     print("\n")
-    #     print("Per Database ROle and Schema Dump did not happen successfully")
-    #     print("\n")
-    #     return
-    # if not(change_admin_role_grants_perdb(options,dumpfile_directory)):
-    #     print("\n")
-    #     print("Per Database Role Dump File not Massaged successfully")
-    #     print("\n")
-    #     return
-    all_roles_dumpfile = '/mnt/c/Users/chajain/Desktop/Files/dump_files/all_roles.sql'
-    dumpfile_directory = '/mnt/c/Users/chajain/Desktop/Files/dump_files'
+    if (not check_connectivity(options) or not check_connectivity(options,False)):
+        print("Connectivity to Source or Target Server Failed. Please check your Network Connectivity")
+        return
+    if not (check_if_db_exists(options)):
+        print("One of the Passed in Databases does not exist on the Source Server")
+        return
+    dumpfile_directory = make_dump_directory()
+    if not (os.path.exists(dumpfile_directory)):
+        print("Dump Files Directory did not get created successfully")
+        return
+    all_roles_dumpfile = dump_roles(options,dumpfile_directory)
+    if not (os.path.exists(all_roles_dumpfile)):
+        print("Global Roles Dump did not happen successfully.")
+        return
+    if not remove_unwanted_users_from_cluster_dump(options, all_roles_dumpfile):
+        return
+    if not dump_grant_statments_perdb(options,dumpfile_directory):
+        return 
+    num_dbs = len(options.get("dbs"))
+    num_files = len(os.listdir(dumpfile_directory))
+    if(num_files != num_dbs*2 + 1):
+        print("\n")
+        print("Per Database Role and Schema Dump did not happen successfully")
+        print("\n")
+        return
+    if not(change_admin_role_grants_perdb(options,dumpfile_directory)):
+        print("\n")
+        print("Per Database Role Dump File not Massaged successfully")
+        print("\n")
+        return
     if not(create_global_roles_ontarget(options,all_roles_dumpfile)):
         print("\n")
         print("Failed when creating Global Roles on Target server Cluster")
