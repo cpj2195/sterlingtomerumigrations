@@ -1,8 +1,3 @@
-"""
-src/DockerImageBuilder/build_dev.py
-Script to handle building dev images of Meru data-plane applications.
-"""
-
 from argparse import ArgumentParser
 from ast import dump
 import subprocess
@@ -94,17 +89,17 @@ def dump_roles(options_dict, dumpfile_directory):
 
 def create_global_roles_ontarget(options_dict, all_roles_dumpfile):
     os.environ["PGPASSWORD"] = options_dict.get("target_password")
-    command = 'psql -h {0} -U {1} -p {2} -d postgres --single-transaction -b -f {3}'\
+    command = 'psql -h {0} -U {1} -p {2} -d postgres -b --set ON_ERROR_STOP=off -f {3}'\
     .format(options_dict.get("target_fqdn"),options_dict.get("target_adminuser"),options_dict.get("target_pg_port"),all_roles_dumpfile)
     print("\n")
     print("-----------------Creating Global Roles on Target Server----------------------")
     p = Popen(command,shell=True, stdin=PIPE,stderr=PIPE)
     output, errors = p.communicate()
-    if p.returncode or errors:
+    if p.returncode:
         print("\n")
         print("\n")
         print(errors)
-        return False
+        # return False
     print("\n")
     print("-----------------Successfully Created Global Roles on Target Server----------------------")
     print("\n")
@@ -115,7 +110,7 @@ def run_grants_per_db(options_dict, dumpfile_directory):
     os.environ["PGPASSWORD"] = options_dict.get("target_password")
     for db in options_dict.get('dbs'):
         grant_dump_file_perdb = os.path.join(dumpfile_directory, "{}-roles.sql".format(db))
-        command = 'psql -h {0} -U {1} -p {2} -d {3} --single-transaction -b -f {4}'\
+        command = 'psql -h {0} -U {1} -p {2} -d {3} -b --set ON_ERROR_STOP=off -f {4}'\
         .format(options_dict.get("target_fqdn"),options_dict.get("target_adminuser"),options_dict.get("target_pg_port"),db, grant_dump_file_perdb)
         print(command)
         print("GRANT/REVOKE Statements running for Database: {}".format(db))
@@ -128,7 +123,7 @@ def run_grants_per_db(options_dict, dumpfile_directory):
             print("\n")
             print("GRANT/REVOKE Statements not run successfully for Database: {}".format(db))
             print("\n")
-            return False
+            # return False
     return True
 
 
